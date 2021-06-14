@@ -17,17 +17,34 @@ class WeatherViewController: UIViewController {
         view = WeatherView()
     }
     
-    var test : Cancellable!
+    // MARK: View observers
+    private var cityNameForSearchObservable : Cancellable?
+    
+    // MARK: View model
+    private let viewModel : WeatherViewModel
+    
+    // MARK: Constructor
+    init(viewModel : WeatherViewModel) {
+        self.viewModel = viewModel
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
+
     override func viewDidLoad() {
         super.viewDidLoad()
-        test = WeatherAPIService.shared.fetchWeather(city: City(name: "Sao Jose dos Campos",
-                                                                temperatureUnit: .celsius))
-            .sink(receiveCompletion: {completion in
-                print(completion)
-            }, receiveValue: { weatherResponse in
-                print(weatherResponse)
-                
-            })
+        setupViewObservers()
+
+    }
+    
+    // MARK: Setup observers
+    private func setupViewObservers(){
+        cityNameForSearchObservable = weatherView.searchTextPublisher.sink{[weak self] cityName in
+            self?.viewModel.fetchWeather(city: cityName)
+        }
     }
 
 

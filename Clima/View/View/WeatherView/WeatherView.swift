@@ -7,6 +7,7 @@
 
 import UIKit
 import AutolayoutExtensions
+import Combine
 
 class WeatherView: UIView {
     
@@ -41,6 +42,11 @@ class WeatherView: UIView {
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+    
+    // MARK: API
+    var searchTextPublisher : AnyPublisher<String?,Never>{
+        return header.searchTextPublisherAPI
     }
 }
 

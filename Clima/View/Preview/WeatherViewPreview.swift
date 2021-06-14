@@ -21,7 +21,7 @@ import Foundation
 import SwiftUI
 struct WeatherViewControllerSwiftUI: UIViewRepresentable {
     func makeUIView(context: Context) -> UIView {
-        return WeatherViewController().view
+        return WeatherViewController(viewModel: WeatherViewModel()).view
     }
     
     func updateUIView(_ view: UIView, context: Context) {

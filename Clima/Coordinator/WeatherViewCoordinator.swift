@@ -18,7 +18,7 @@ class WheaterViewCoordinator : Coordinator{
     }
     
     func start() {
-        let weatherVC = WeatherViewController()
+        let weatherVC = WeatherViewController(viewModel: WeatherViewModel())
         weatherVC.coordinator = self
         rootVC.pushViewController(weatherVC, animated: true)
     }
