@@ -14,25 +14,20 @@ class WeatherViewModel{
     
     private var cityWeatherObservable : Cancellable?
     
-    func fetchWeather(city : String?){
-        
-        guard let cityName = city else { return }
-        
-        cityWeatherObservable = weatherApiService
-            .fetchWeather(city: City(name: cityName,temperatureUnit: .celsius)).sink(
-                receiveCompletion: { completion in
-                    switch(completion){
-                        case .failure(let error):
-                            print("Error: \(error)")
-                        case .finished:
-                            print("Observer is finished")
-                    }
-                    
-                },
-                receiveValue: { weatherResponse in
-                    print(weatherResponse)
-                    
-                })
+    
+    
+    // MARK: API
+
+    
+    func fetchWeather(city : String) -> AnyPublisher<CityWeatherViewModel,Never>{
+        return weatherApiService.fetchWeather(city: city)
+            .map { CityWeatherViewModel(name: $0.name, temperature: $0.temperature) }
+            .replaceError(with: CityWeatherViewModel(name: "Error to get city \(city)", temperature: nil))
+            .setFailureType(to: Never.self)
+            .receive(on: DispatchQueue.main)
+            .eraseToAnyPublisher()
     }
+    
+
     
 }

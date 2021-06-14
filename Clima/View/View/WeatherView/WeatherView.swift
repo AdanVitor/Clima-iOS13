@@ -11,6 +11,7 @@ import Combine
 
 class WeatherView: UIView {
     
+    // MARK: Subviews
     let containerStack = UIStackView.createStackView(
         axis: .vertical,
         spacing: 10,
@@ -35,6 +36,8 @@ class WeatherView: UIView {
     
     let spaceView = UIView()
     
+    // MARK: Constructor
+    
     override init(frame: CGRect) {
         super.init(frame: frame)
         applyViewCode()
@@ -47,6 +50,12 @@ class WeatherView: UIView {
     // MARK: API
     var searchTextPublisher : AnyPublisher<String?,Never>{
         return header.searchTextPublisherAPI
+    }
+    
+    func update(cityWeatherViewModel : CityWeatherViewModel){
+        self.cityLabel.text = cityWeatherViewModel.name
+        self.temperatureLabel.text = cityWeatherViewModel.temperature
+        
     }
 }
 

@@ -20,6 +20,9 @@ class WeatherViewController: UIViewController {
     // MARK: View observers
     private var cityNameForSearchObservable : Cancellable?
     
+    // MARK: View Model observers
+    private var cityTemperatureObservable : Cancellable?
+    
     // MARK: View model
     private let viewModel : WeatherViewModel
     
@@ -42,8 +45,12 @@ class WeatherViewController: UIViewController {
     
     // MARK: Setup observers
     private func setupViewObservers(){
-        cityNameForSearchObservable = weatherView.searchTextPublisher.sink{[weak self] cityName in
-            self?.viewModel.fetchWeather(city: cityName)
+        self.cityNameForSearchObservable = weatherView.searchTextPublisher.sink{[weak self] cityName in
+            guard let city = cityName else { return }
+            guard let self = self else { return }
+            self.cityTemperatureObservable = self.viewModel.fetchWeather(city: city).sink{ cityWeatherViewModel in
+                self.weatherView.update(cityWeatherViewModel: cityWeatherViewModel)
+            }
         }
     }
 

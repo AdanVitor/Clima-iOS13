@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct City{
+struct CityWeather{
     let name : String
-    let temperatureUnit : UnitTemperature
+    let temperature : Measurement<UnitTemperature>?
 }

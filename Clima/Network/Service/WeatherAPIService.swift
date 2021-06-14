@@ -19,10 +19,18 @@ class WeatherAPIService{
     
     private let weatherEndPoints = WeatherEndPoints()
     
-    func fetchWeather(city : City) -> AnyPublisher<CityWeatherResponse,Error>{
+    private static let temperatureUnit = UnitTemperature.celsius
+    
+    func fetchWeather(city : String) -> AnyPublisher<CityWeather,Error>{
         return weatherEndPoints
-            .fetchCityWeatherEndPoint(city: city,apiKey: apiKey,languageCode: languageCode)
+            .fetchCityWeatherEndPoint(city: city,temperatureUnit: WeatherAPIService.temperatureUnit, apiKey: apiKey, languageCode: languageCode)
             .createURLRequest(httpMethod: .GET)
             .fetchJsonPublisher(jsonType: CityWeatherResponse.self)
+            .map{ jsonResponse in
+                let temperature = jsonResponse.main?.temp
+                return CityWeather(name: jsonResponse.name,
+                                   temperature: temperature != nil ? Measurement(value: temperature!, unit: WeatherAPIService.temperatureUnit) : nil)
+            }.eraseToAnyPublisher()
+        
     }
 }

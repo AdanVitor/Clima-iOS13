@@ -13,13 +13,14 @@ class WeatherEndPoints{
     
     private let weatherBaseURL = "api.openweathermap.org/data/2.5/weather"
     
-    func fetchCityWeatherEndPoint(city : City,
-                          apiKey : String,
-                          languageCode : LanguageCode) -> EndPoint{
+    func fetchCityWeatherEndPoint(city : String,
+                                  temperatureUnit : UnitTemperature,
+                                  apiKey : String,
+                                  languageCode : LanguageCode) -> EndPoint{
         return EndPoint(baseUrl: weatherBaseURL,
                         queryItemsAsDictionary:
-                            ["q" : city.name,
-                             "units" : WeatherTemperatureOption.from(unitTemperature: city.temperatureUnit).rawValue,
+                            ["q" : city,
+                             "units" : WeatherTemperatureOption.from(unitTemperature: temperatureUnit).rawValue,
                              "appid" : apiKey,
                              "lang" : languageCode.rawValue
                             ])
