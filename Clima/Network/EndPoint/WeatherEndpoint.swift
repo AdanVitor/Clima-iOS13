@@ -10,7 +10,6 @@ import NetworkLibrary
 
 class WeatherEndPoints{
     
-    
     private let weatherBaseURL = "api.openweathermap.org/data/2.5/weather"
     
     func fetchCityWeatherEndPoint(city : String,

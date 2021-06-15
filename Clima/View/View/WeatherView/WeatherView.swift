@@ -20,17 +20,15 @@ class WeatherView: UIView {
     
     let header = WeatherHeaderView()
     
-    let wheaterMark = UIImageView.createImageView(image: UIImage(systemName: "sun.max")).then{
+    let wheaterMark = UIImageView.createImageView(image: UIImage(systemName: "")).then{
         $0.tintColor = .label
     }
     
     let temperatureLabel = UILabel().then{
-        $0.text = "21°C"
         $0.setDynamicFontStyle(fontStyle: .headline, sizeToScale: 80)
     }
     
     let cityLabel = UILabel().then{
-        $0.text = "São José dos Campos"
         $0.setDynamicFontStyle(fontStyle: .subheadline, sizeToScale: 30)
     }
     
@@ -55,6 +53,7 @@ class WeatherView: UIView {
     func update(cityWeatherViewModel : CityWeatherViewModel){
         self.cityLabel.text = cityWeatherViewModel.name
         self.temperatureLabel.text = cityWeatherViewModel.temperature
+        self.wheaterMark.image = UIImage(systemName: cityWeatherViewModel.sfSymbol ?? "")
         
     }
 }

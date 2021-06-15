@@ -23,7 +23,7 @@ struct TemperatureResponse : Codable {
 }
 
 struct WeatherDescriptionResponse : Codable{
-    let description : String
+    let id : Int
     let main : String
-    
+    let description : String
 }
