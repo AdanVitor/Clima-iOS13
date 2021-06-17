@@ -13,20 +13,18 @@ class WeatherViewModel : NSObject{
     
     private let weatherApiService = WeatherAPIService.shared
     private let locationManager = CLLocationManager()
-    private var locationDelegatePublisher = LocationDelegatePublisher()
+    private let locationDelegatePublisher : LocationDelegatePublisher
     
     // MARK: API
     
     override init() {
+        self.locationDelegatePublisher = LocationDelegatePublisher(locationManager: self.locationManager)
         super.init()
-        self.locationManager.delegate = locationDelegatePublisher
-        
     }
     
     func fetchWeatherFromUserLocation() -> AnyPublisher<CityWeatherViewModel,Never> {
-        locationManager.requestWhenInUseAuthorization()
-        locationManager.requestLocation()
-        return locationDelegatePublisher.locationPublisher.flatMap{[weak self] location -> AnyPublisher<CityWeatherViewModel,Never> in
+        
+        return locationDelegatePublisher.requestLocationPublisher().flatMap{[weak self] location -> AnyPublisher<CityWeatherViewModel,Never> in
             guard let self = self else { return Just(CityWeatherViewModel(name: "Error to get location data", temperature: nil, sfSymbol: nil)).eraseToAnyPublisher()}
             let latitude = location.coordinate.latitude
             let longitude = location.coordinate.longitude
@@ -39,6 +37,8 @@ class WeatherViewModel : NSObject{
         return applyViewModelOperations(weatherApiPublisher: weatherApiService.fetchWeather(city: city) ,
                                         errorMessage: "Error to get city \(city)")
     }
+    
+   
     
     private func applyViewModelOperations(weatherApiPublisher : AnyPublisher<CityWeather,Error>, errorMessage: String) -> AnyPublisher<CityWeatherViewModel,Never> {
         return weatherApiPublisher
@@ -54,17 +54,38 @@ class WeatherViewModel : NSObject{
 private class LocationDelegatePublisher : NSObject, CLLocationManagerDelegate{
     
     private let locationSubject = PassthroughSubject<CLLocation, Never>()
-    var locationPublisher : AnyPublisher<CLLocation, Never>{
-        return locationSubject.eraseToAnyPublisher()
+   
+    private weak var locationManager : CLLocationManager?
+    
+    init(locationManager : CLLocationManager){
+        super.init()
+        self.locationManager = locationManager
+        self.locationManager?.delegate = self
     }
     
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
         guard let location = locations.last else { return }
+        manager.stopUpdatingLocation()
         locationSubject.send(location)
     }
     
     func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
         print(error.localizedDescription)
+    }
+    
+    func requestLocationPublisher() -> AnyPublisher<CLLocation,Never>{
+        requestLocationAccessIfIsNeeded()
+        self.locationManager?.requestLocation()
+        return locationSubject.eraseToAnyPublisher()
+    }
+    
+    private func requestLocationAccessIfIsNeeded(){
+        switch CLLocationManager.authorizationStatus() {
+            case .authorizedAlways, .authorizedWhenInUse:
+                break
+            default:
+                locationManager?.requestWhenInUseAuthorization()
+        }
     }
     
 }
