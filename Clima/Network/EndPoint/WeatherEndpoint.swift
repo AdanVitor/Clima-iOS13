@@ -25,6 +25,21 @@ class WeatherEndPoints{
                             ])
     }
     
+    func fetchWeatherFromLocationEndPoint(latitude : Double,
+                                          longitude: Double,
+                                          temperatureUnit : UnitTemperature,
+                                          apiKey : String,
+                                          languageCode : LanguageCode) -> EndPoint{
+        return EndPoint(baseUrl: weatherBaseURL,
+                        queryItemsAsDictionary:
+                            ["lat" : String(latitude),
+                             "lon" : String(longitude),
+                             "units" : WeatherTemperatureOption.from(unitTemperature: temperatureUnit).rawValue,
+                             "appid" : apiKey,
+                             "lang" : languageCode.rawValue
+                            ])
+    }
+    
 }
 
 

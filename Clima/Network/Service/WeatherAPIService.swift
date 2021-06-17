@@ -8,6 +8,7 @@
 import Foundation
 import Combine
 import NetworkLibrary
+import CoreLocation
 
 class WeatherAPIService{
     
@@ -27,6 +28,19 @@ class WeatherAPIService{
                                       temperatureUnit: WeatherAPIService.temperatureUnit,
                                       apiKey: apiKey,
                                       languageCode: languageCode)
+            .createURLRequest(httpMethod: .GET)
+            .fetchJsonPublisher(jsonType: CityWeatherResponse.self)
+            .map{ $0.toCityWeather(temperatureUnit: WeatherAPIService.temperatureUnit)}
+            .eraseToAnyPublisher()
+        
+    }
+    
+    func fetchWeatherFromLocation(latitude : Double, longitude: Double) -> AnyPublisher<CityWeather,Error>{
+        return weatherEndPoints.fetchWeatherFromLocationEndPoint(latitude: latitude,
+                                                                 longitude: longitude,
+                                                                 temperatureUnit: WeatherAPIService.temperatureUnit,
+                                                                 apiKey: apiKey,
+                                                                 languageCode: languageCode)
             .createURLRequest(httpMethod: .GET)
             .fetchJsonPublisher(jsonType: CityWeatherResponse.self)
             .map{ $0.toCityWeather(temperatureUnit: WeatherAPIService.temperatureUnit)}

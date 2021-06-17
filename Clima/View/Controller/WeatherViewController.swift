@@ -6,6 +6,7 @@
 import UIKit
 import Combine
 
+
 class WeatherViewController: UIViewController {
 
     // MARK: Coordinator
@@ -19,9 +20,12 @@ class WeatherViewController: UIViewController {
     
     // MARK: View observers
     private var cityNameForSearchObservable : Cancellable?
+    private var locationButtonPressedObservable : Cancellable?
     
     // MARK: View Model observers
     private var cityTemperatureObservable : Cancellable?
+    private var locationWeatherObservable : Cancellable?
+    private var firstLocationWeatherObservable : Cancellable?
     
     // MARK: View model
     private let viewModel : WeatherViewModel
@@ -40,7 +44,10 @@ class WeatherViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         setupViewObservers()
-
+        firstLocationWeatherObservable = self.viewModel.fetchWeatherFromUserLocation().sink{ cityWeatherViewModel in
+            self.weatherView.update(cityWeatherViewModel: cityWeatherViewModel)
+        }
+        
     }
     
     // MARK: Setup observers
@@ -52,7 +59,14 @@ class WeatherViewController: UIViewController {
                 self.weatherView.update(cityWeatherViewModel: cityWeatherViewModel)
             }
         }
+        self.locationButtonPressedObservable = weatherView.locationButtonPressedPublisher.sink{[weak self] in
+            guard let self = self else { return }
+            self.locationWeatherObservable = self.viewModel.fetchWeatherFromUserLocation().sink{ cityWeatherViewModel in
+                self.weatherView.update(cityWeatherViewModel: cityWeatherViewModel)
+            }
+        }
     }
+    
 
 
 }

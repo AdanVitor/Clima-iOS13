@@ -8,6 +8,7 @@
 import UIKit
 import Combine
 import AutolayoutExtensions
+import CombineExtensions
 
 class WeatherHeaderView: UIView {
     
@@ -36,6 +37,11 @@ class WeatherHeaderView: UIView {
     private let searchTextObservable = PassthroughSubject<String?,Never>()
     var searchTextPublisherAPI : AnyPublisher<String?,Never>{
         return searchTextObservable.eraseToAnyPublisher()
+    }
+    
+    var locationButtonPublisher : AnyPublisher<Void,Never>{
+        return locationSetButton.actionPublisher(for: .touchUpInside)
+            .map{_ in return}.eraseToAnyPublisher()
     }
     
     // MARK: Constructor

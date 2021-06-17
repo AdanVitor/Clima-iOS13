@@ -50,6 +50,10 @@ class WeatherView: UIView {
         return header.searchTextPublisherAPI
     }
     
+    var locationButtonPressedPublisher : AnyPublisher<Void,Never>{
+        return header.locationButtonPublisher
+    }
+    
     func update(cityWeatherViewModel : CityWeatherViewModel){
         self.cityLabel.text = cityWeatherViewModel.name
         self.temperatureLabel.text = cityWeatherViewModel.temperature
